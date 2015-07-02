@@ -1,4 +1,6 @@
-package com.noozo.moviemaker;
+package com.noozo.moviemaker.data;
+
+import com.noozo.moviemaker.data.ImageData;
 
 import javax.swing.*;
 import java.awt.*;

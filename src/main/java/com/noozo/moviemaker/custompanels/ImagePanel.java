@@ -1,4 +1,4 @@
-package com.noozo.moviemaker;
+package com.noozo.moviemaker.custompanels;
 
 import org.imgscalr.Scalr;
 
