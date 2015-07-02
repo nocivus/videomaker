@@ -1,5 +1,11 @@
 package com.noozo.moviemaker;
 
+import com.noozo.moviemaker.custompanels.ColorPickerPanel;
+import com.noozo.moviemaker.custompanels.ImagePanel;
+import com.noozo.moviemaker.data.ImageData;
+import com.noozo.moviemaker.data.ImageDataListCellRenderer;
+import com.noozo.moviemaker.data.ImageListModel;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;

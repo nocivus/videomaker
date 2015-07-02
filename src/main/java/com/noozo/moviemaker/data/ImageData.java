@@ -1,4 +1,4 @@
-package com.noozo.moviemaker;
+package com.noozo.moviemaker.data;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

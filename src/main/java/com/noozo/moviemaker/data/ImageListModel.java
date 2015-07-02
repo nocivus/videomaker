@@ -1,6 +1,7 @@
-package com.noozo.moviemaker;
+package com.noozo.moviemaker.data;
 
 import com.google.common.collect.Lists;
+import com.noozo.moviemaker.data.ImageData;
 
 import javax.swing.*;
 import java.util.List;
