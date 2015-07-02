@@ -7,11 +7,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 public class VideoMaker {
 
     private static final String black = "templates/black.jpg";
-    private static final String ffmpeg = PlatformUtils.OS == PlatformUtils.OS_OSX ? "ffmpeg/./ffmpeg" : "ffmpeg/ffmpeg.exe";
+    private static final String ffmpeg = Utils.OS == Utils.OS_OSX ? "ffmpeg/./ffmpeg" : "ffmpeg/ffmpeg.exe";
 
     List<BufferedImage> images = Lists.newArrayList();
 
@@ -30,34 +31,17 @@ public class VideoMaker {
         System.out.println("Overlaying text...");
         for (int i=0; i<imageFiles.length; i++) {
             String filename = (i+1) + "_processed.jpg";
-            images.add(overlayText(ImageIO.read(new File(filename)), "Teste"));
+            images.add(Utils.overlayText(ImageIO.read(new File(filename)), "Teste", Color.black));
         }
         // Add the last one twice, so it gets its air time
         String filename = imageFiles.length + "_processed.jpg";
-        images.add(overlayText(ImageIO.read(new File(filename)), "Teste"));
+        images.add(Utils.overlayText(ImageIO.read(new File(filename)), "Teste", Color.black));
 
         // Write them back to file
         System.out.println("Saving them back to file...");
         for (int i=0; i<imageFiles.length; i++) {
             ImageIO.write(images.get(i), "jpg", new File((i+1) + "_processed.jpg"));
         }
-    }
-
-    private BufferedImage overlayText(BufferedImage old, String text) {
-
-        int w = old.getWidth();
-        int h = old.getHeight();
-        BufferedImage img = new BufferedImage(w, h, old.getType());
-        Graphics2D g2d = img.createGraphics();
-        g2d.drawImage(old, 0, 0, null);
-        g2d.setPaint(Color.black);
-        g2d.setFont(new Font("Serif", Font.BOLD, 20));
-        FontMetrics fm = g2d.getFontMetrics();
-        int x = img.getWidth()/2 - fm.stringWidth(text)/2;
-        int y = (int)(img.getHeight()/1.5f) - fm.stringWidth(text)/2;
-        g2d.drawString(text, x, y);
-        g2d.dispose();
-        return img;
     }
 
     private void create(String movieFile, int secondsPerImage) throws Exception {
@@ -78,7 +62,12 @@ public class VideoMaker {
 
     public static void main(String[] args) throws Exception {
 
-        VideoMaker maker = new VideoMaker(1024, 768, black, "test/1.jpg", black);//, "test/2.jpg", "test/3.jpg");
-        maker.create("out.mp4", 2);
+        //VideoMaker maker = new VideoMaker(1024, 768, black, "test/1.jpg", black);//, "test/2.jpg", "test/3.jpg");
+        //maker.create("out.mp4", 2);
+
+        Locale.setDefault(new Locale("pt", "PT"));
+
+        VideoMakerGUI gui = new VideoMakerGUI();
+        gui.setVisible(true);
     }
 }
