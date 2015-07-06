@@ -66,18 +66,20 @@ public class VideoMakerGUI extends JFrame {
 
         ImageData firstSlide = new ImageData(VideoMaker.BLACK);
         firstSlide.title.fontSize = 30;
-        firstSlide.title.position = new Point(220, 360);
+        firstSlide.title.position = new Point(280, 360);
         firstSlide.title.text = "Moradia T3 - 195.000 Euro";
         firstSlide.title2.fontSize = 20;
-        firstSlide.title2.position = new Point(380, 420);
+        firstSlide.title2.position = new Point(420, 420);
         firstSlide.title2.text = "Quinta do Conde";
+        
         ImageData lastSlide = new ImageData(VideoMaker.BLACK);
-        lastSlide.title.fontSize = 20;
-        lastSlide.title.position = new Point(340, 380);
-        lastSlide.title.text = "Tippy Family Century 21";
-        lastSlide.title2.fontSize = 30;
-        lastSlide.title2.position = new Point(220, 340);
-        lastSlide.title2.text = "Isabel Dias - 939 608 228";
+        lastSlide.title.fontSize = 30;
+        lastSlide.title.position = new Point(280, 360);
+        lastSlide.title.text = "Isabel Dias - 939 608 228";
+        lastSlide.title2.fontSize = 20;
+        lastSlide.title2.position = new Point(400, 420);
+        lastSlide.title2.text = "Tippy Family Century 21";        
+        
         getImageListModel().add(firstSlide);        
         getImageListModel().add(lastSlide);
     }

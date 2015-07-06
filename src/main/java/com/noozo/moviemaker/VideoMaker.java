@@ -31,7 +31,7 @@ public class VideoMaker {
         		new File((i+1) + "_processed.jpg").delete();
         	}
         	
-            String command = ffmpeg + " -i " + imageFiles.get(i).fullPath + " -vf scale=" + VIDEO_WIDTH + ":" + VIDEO_HEIGHT + " " + (i+1) + "_processed.jpg";
+            String command = ffmpeg + " -i " + imageFiles.get(i).fullPath + " -pix_fmt yuv420p -vf scale=" + VIDEO_WIDTH + ":" + VIDEO_HEIGHT + " " + (i+1) + "_processed.jpg";
             System.out.println(command);
             Process p = Runtime.getRuntime().exec(command);
             p.waitFor();
@@ -68,7 +68,7 @@ public class VideoMaker {
 
         System.out.println("Deleting processed images...");
         for (int i=1; i<images.size()+1; i++) {
-        	new File(i + "_processed.jpg").delete();
+        	//new File(i + "_processed.jpg").delete();
         }
     }
 

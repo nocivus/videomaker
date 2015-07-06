@@ -108,7 +108,7 @@ public class Utils {
     }
     
     public static void showInfo(String message) {
-        JOptionPane.showMessageDialog(null, message, "Erro!", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, message, "Informação!", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static boolean confirm(JFrame parent, String message) {
