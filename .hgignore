@@ -3,3 +3,6 @@ syntax:glob
 *.mp4
 *.iml
 target
+.project
+.settings
+.classpath

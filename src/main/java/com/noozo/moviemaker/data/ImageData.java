@@ -1,10 +1,10 @@
 package com.noozo.moviemaker.data;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 /**
  * void
@@ -17,9 +17,11 @@ public class ImageData {
     public BufferedImage image;
 
     // Overlays
-    public String title;
-    public Color titleColor = Color.white;
+    public Text title = new Text();
+    public Text title2 = new Text();
 
+    public ImageData() { }
+    
     public ImageData(String file) throws IOException {
 
         this.fullPath = file;
