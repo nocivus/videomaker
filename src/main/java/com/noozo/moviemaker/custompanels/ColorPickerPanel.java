@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
  */
 public class ColorPickerPanel extends JPanel {
 
-    interface ColorChangeListener {
+    public interface ColorChangeListener {
         void onColorChanged();
     }
     private Color color;

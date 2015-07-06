@@ -1,10 +1,12 @@
 package com.noozo.moviemaker.custompanels;
 
-import org.imgscalr.Scalr;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
+
+import org.imgscalr.Scalr;
 
 public class ImagePanel extends JPanel {
 
@@ -20,7 +22,8 @@ public class ImagePanel extends JPanel {
         defineSizes(width, height);
 
         if (image != null) {
-            this.image = Scalr.resize(image, width, height);
+
+            this.image = Scalr.resize(image, Math.min(width,height));
         }
 
         // Force repaint

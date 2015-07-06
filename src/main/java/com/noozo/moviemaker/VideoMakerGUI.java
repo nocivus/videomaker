@@ -1,20 +1,29 @@
 package com.noozo.moviemaker;
 
-import com.noozo.moviemaker.custompanels.ColorPickerPanel;
-import com.noozo.moviemaker.custompanels.ImagePanel;
-import com.noozo.moviemaker.data.ImageData;
-import com.noozo.moviemaker.data.ImageDataListCellRenderer;
-import com.noozo.moviemaker.data.ImageListModel;
+import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
+
+import com.noozo.moviemaker.custompanels.GenericDataPanel.Mode;
+import com.noozo.moviemaker.custompanels.ImageDataPanel;
+import com.noozo.moviemaker.data.CustomListModel;
+import com.noozo.moviemaker.data.ImageData;
+import com.noozo.moviemaker.data.ImageDataListCellRenderer;
 
 /**
  * void
@@ -22,30 +31,27 @@ import java.io.IOException;
  */
 public class VideoMakerGUI extends JFrame {
 
+	VideoMaker maker = new VideoMaker();
     private JPanel mainPanel;
     private JScrollPane imagesScroll;
-    private JList imageList;
-    private ImageListModel imageListModel;
+    private JList<ImageData> imageList;
+    private CustomListModel<ImageData> imageListModel;
     private JPanel sidebarPanel;
     private JPanel actionsPanel;
     private JPanel sidebarActionsPanel;
-    private JPanel imageDetailsPanel;
+    private ImageDataPanel imageDetailsPanel;
     private JButton addImagesButton;
     private String lastFolder = ".";
-    private JPanel imageDetailsFields;
-    private ImagePanel imagePanel;
-    private JPanel titleTextPanel;
-    private JLabel titleTextLabel;
-    private JTextField titleTextField;
     private JButton exitButton;
     private JButton generateButton;
-    private ColorPickerPanel titleColorPanel;
+    private ImageData selected;
+    private JButton moveUpButton;
+    private JButton moveDownButton;
 
-    @SuppressWarnings("unchecked")
-    public VideoMakerGUI() throws IOException {
+    public VideoMakerGUI() throws Exception {
 
-        super("Video Maker");
-        setSize(1024, 768);
+        setTitle("Video Maker");
+        setSize(1280, 800);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -58,13 +64,22 @@ public class VideoMakerGUI extends JFrame {
         setContentPane(getMainPanel());
         Utils.centerWindow(this);
 
-        getImageListModel().add(new ImageData("templates/black.jpg"));
-        getImageListModel().add(new ImageData("test/1.jpg"));
-        getImageListModel().add(new ImageData("test/2.jpg"));
-        getImageListModel().add(new ImageData("test/3.jpg"));
-        getImageListModel().add(new ImageData("templates/black.jpg"));
-
-        updateDetails();
+        ImageData firstSlide = new ImageData(VideoMaker.BLACK);
+        firstSlide.title.fontSize = 30;
+        firstSlide.title.position = new Point(220, 360);
+        firstSlide.title.text = "Moradia T3 - 195.000 Euro";
+        firstSlide.title2.fontSize = 20;
+        firstSlide.title2.position = new Point(380, 420);
+        firstSlide.title2.text = "Quinta do Conde";
+        ImageData lastSlide = new ImageData(VideoMaker.BLACK);
+        lastSlide.title.fontSize = 20;
+        lastSlide.title.position = new Point(340, 380);
+        lastSlide.title.text = "Tippy Family Century 21";
+        lastSlide.title2.fontSize = 30;
+        lastSlide.title2.position = new Point(220, 340);
+        lastSlide.title2.text = "Isabel Dias - 939 608 228";
+        getImageListModel().add(firstSlide);        
+        getImageListModel().add(lastSlide);
     }
 
     private void confirmExit() {
@@ -72,102 +87,108 @@ public class VideoMakerGUI extends JFrame {
             System.exit(0);
         }
     }
-
-    private JPanel createBorderPanel(JPanel panel, JComponent north, JComponent south, JComponent east, JComponent west, JComponent center) {
-        if (panel == null) {
-            panel = new JPanel();
-            panel.setLayout(new BorderLayout());
-            if (north != null) {
-                panel.add(north, BorderLayout.NORTH);
-            }
-            if (south != null) {
-                panel.add(south, BorderLayout.SOUTH);
-            }
-            if (east != null) {
-                panel.add(east, BorderLayout.EAST);
-            }
-            if (west != null) {
-                panel.add(west, BorderLayout.WEST);
-            }
-            if (center != null) {
-                panel.add(center, BorderLayout.CENTER);
-            }
-            panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        }
-        return panel;
+    
+    private void loadImageData(ImageData data) {
+    	
+    	getImageDetailsPanel().setVisible(data != null);
+    	
+    	// Force repaint, so we get proper dimensions
+        this.validate();
+        this.repaint();
+    	
+    	if (data != null) {
+    		getImageDetailsPanel().setObject(data, Mode.EDIT);
+    	}
     }
-
-    private JPanel createPanel(JPanel panel, JComponent...comps) {
-        if (panel == null) {
-            panel = new JPanel();
-            for (JComponent comp : comps) {
-                panel.add(comp);
-            }
-            panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        }
-        return panel;
+    
+    private ImageData getSelectedImage() {
+        return getImageList().getSelectedValue();
     }
-
-    private JLabel createLabel(JLabel label, String text) {
-        if (label == null) {
-            label = new JLabel(text);
-        }
-        return label;
-    }
-
-    private JTextField createTextField(JTextField field, int width, KeyAdapter keyAdapter) {
-        if (field == null) {
-            field = new JTextField();
-            field.setSize(width, field.getHeight());
-            field.setPreferredSize(new Dimension(width, field.getPreferredSize().height));
-            field.setEnabled(false);
-            if (keyAdapter != null) {
-                field.addKeyListener(keyAdapter);
-            }
-        }
-        return field;
-    }
-
-    private JButton createButton(JButton button, String text, ActionListener l) {
-        if (button == null) {
-            button = new JButton(text);
-            button.addActionListener(l);
-        }
-        return button;
-    }
-
+    
     private JPanel getMainPanel() {
-
-        mainPanel = createBorderPanel(mainPanel, null, getActionsPanel(), null, getSidebarPanel(), getImageDetailsPanel());
+    	if (mainPanel == null) {
+    		mainPanel = new JPanel();
+    		mainPanel.setLayout(new BorderLayout());
+    		mainPanel.add(getActionsPanel(), BorderLayout.SOUTH);
+    		mainPanel.add(getSidebarPanel(), BorderLayout.WEST);
+    		mainPanel.add(getImageDetailsPanel(), BorderLayout.CENTER);
+    		mainPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        }
         return mainPanel;
     }
 
     private JPanel getActionsPanel() {
-        actionsPanel = createPanel(actionsPanel, getGenerateButton(), getExitButton());
+        if (actionsPanel == null) {
+        	actionsPanel = new JPanel();
+        	actionsPanel.add(getGenerateButton());
+        	actionsPanel.add(getExitButton());
+        	actionsPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        }
         return actionsPanel;
     }
 
     private JButton getGenerateButton() {
-        generateButton = createButton(generateButton, "Criar video", e -> {
-
-        });
+    	if (generateButton == null) {
+    		generateButton = new JButton("Criar video");
+    		generateButton.addActionListener(e -> {
+    			
+    			// Update the current selection data
+    			getImageDetailsPanel().callFieldsToObject();
+    			
+    			// Ask for file location and name
+    			File movieFile = Utils.askForTarget("mp4", this);
+    			
+    			// Ask for seconds per image
+    			int secondsPerImage = Utils.integerInput("Segundos por imagem?", 5);
+    			
+    			// Generate movie
+    			try {
+    			
+    				maker.process(getImageListModel().getData());
+    				maker.create(movieFile.getAbsolutePath(), secondsPerImage);
+    				
+    				// Ok when done
+    				Utils.showInfo("Video criado com sucesso em: " + movieFile.getAbsolutePath());
+    			
+    			} catch (Exception exc) {
+    			
+    				Utils.showError("Erro ao criar o video: " + exc.getMessage());
+    				exc.printStackTrace();
+    			}
+    		});
+    	}
         return generateButton;
     }
 
     private JButton getExitButton() {
-        exitButton = createButton(exitButton, "Sair", e -> {
-            confirmExit();
-        });
-        return exitButton;
+    	if (exitButton == null) {
+    		exitButton = new JButton("Sair");
+    		exitButton.addActionListener(e -> {
+    			confirmExit();
+    		});
+    	}
+    	return exitButton;
     }
 
     private JPanel getSidebarPanel() {
-        sidebarPanel = createBorderPanel(sidebarPanel, null, getSidebarActionsPanel(), null, null, getImagesScroll());
+        if (sidebarPanel == null) {
+        	sidebarPanel = new JPanel();
+        	sidebarPanel.setLayout(new BorderLayout());
+        	sidebarPanel.add(getSidebarActionsPanel(), BorderLayout.SOUTH);
+        	sidebarPanel.add(getImagesScroll(), BorderLayout.CENTER);
+        	sidebarPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        }
         return sidebarPanel;
     }
 
     private JPanel getSidebarActionsPanel() {
-        sidebarActionsPanel = createPanel(sidebarActionsPanel, getAddImagesButton());
+        if (sidebarActionsPanel == null) {
+        	sidebarActionsPanel = new JPanel();
+        	sidebarActionsPanel.add(getAddImagesButton());
+        	sidebarActionsPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        	sidebarActionsPanel.add(getMoveUpButton());
+        	sidebarActionsPanel.add(getMoveDownButton());
+        }
         return sidebarActionsPanel;
     }
 
@@ -177,168 +198,117 @@ public class VideoMakerGUI extends JFrame {
         }
         return imagesScroll;
     }
-
-    @SuppressWarnings("unchecked")
-    private JList getImageList() {
+    
+    private JList<ImageData> getImageList() {
         if (imageList == null) {
-            imageList = new JList();
+            imageList = new JList<>();
             imageList.setModel(getImageListModel());
             imageList.setCellRenderer(new ImageDataListCellRenderer());
             imageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             imageList.addListSelectionListener(new ListSelectionListener() {
-                @Override
+
+				@Override
                 public void valueChanged(ListSelectionEvent e) {
 
-                    if (!e.getValueIsAdjusting()) {
-                        updateDetails();
-                    }
+					if (!e.getValueIsAdjusting()) {
+						
+						// Update the values of the current one
+						if (selected != null) {
+							//System.out.println("Saving information for the current selection");
+							getImageDetailsPanel().callFieldsToObject();
+						}
+	
+						// Load the data from the newly selected
+						selected = getSelectedImage();
+						//System.out.println("Current selection is now " + selected);
+						//System.out.println("Loading information from the current selection");
+	                    loadImageData(selected);
+                    }                    
                 }
             });
         }
         return imageList;
     }
 
-    private ImageListModel getImageListModel() {
+    private CustomListModel<ImageData> getImageListModel() {
         if (imageListModel == null) {
-            imageListModel = new ImageListModel();
+            imageListModel = new CustomListModel<>();
         }
         return imageListModel;
     }
 
-    private JPanel getImageDetailsPanel() {
-        imageDetailsPanel = createBorderPanel(imageDetailsPanel, null, getImageDetailsFields(), null, null, getImagePanel());
+    private ImageDataPanel getImageDetailsPanel() {
+        if (imageDetailsPanel == null) {
+        	imageDetailsPanel = new ImageDataPanel();
+        	imageDetailsPanel.setVisible(false);
+        	imageDetailsPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        }
         return imageDetailsPanel;
     }
 
-    private JPanel getImageDetailsFields() {
-        imageDetailsFields = createPanel(imageDetailsFields);
-        imageDetailsFields.setLayout(new BoxLayout(imageDetailsFields, BoxLayout.Y_AXIS));
-        imageDetailsFields.add(getTitleTextPanel());
-        return imageDetailsFields;
-    }
-
-    private JPanel getTitleTextPanel() {
-        titleTextPanel = createPanel(titleTextPanel, getTitleTextLabel(), getTitleTextField(), getTitleColorPanel());
-        return titleTextPanel;
-    }
-
-    private JLabel getTitleTextLabel() {
-        titleTextLabel = createLabel(titleTextLabel, "Título");
-        return titleTextLabel;
-    }
-
-    private JTextField getTitleTextField() {
-        titleTextField = createTextField(titleTextField, 200, new KeyAdapter() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-                super.keyReleased(e);
-                updateImage(getSelectedImage());
-            }
-        });
-        return titleTextField;
-    }
-
-    private ColorPickerPanel getTitleColorPanel() {
-        if (titleColorPanel == null) {
-            titleColorPanel = new ColorPickerPanel(20, 20, new ColorPickerPanel.ColorChangeListener() {
-
-                @Override
-                public void onColorChanged() {
-
-                    updateImage(getSelectedImage());
-                }
-            });
-        }
-        return titleColorPanel;
-    }
-
-    private ImagePanel getImagePanel() {
-        if (imagePanel == null) {
-            imagePanel = new ImagePanel();
-            imagePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        }
-        return imagePanel;
-    }
-
     private JButton getAddImagesButton() {
+    	if (addImagesButton == null) {
+    		addImagesButton = new JButton("Adicionar Imagens");
+    		addImagesButton.addActionListener(e -> {
 
-        addImagesButton = createButton(addImagesButton, "Adicionar Imagens", e -> {
-
-            JFileChooser f = new JFileChooser(lastFolder);
-            f.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            f.setMultiSelectionEnabled(true);
-            f.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(File f) {
-                    return f.getName().toLowerCase().endsWith("jpg");
-                }
-
-                @Override
-                public String getDescription() {
-                    return "JPG files";
-                }
-            });
-            f.showOpenDialog(null);
-
-            if (f.getSelectedFiles() != null) {
-
-                for (File file : f.getSelectedFiles()) {
-
-                    try {
-
-                        getImageListModel().add(new ImageData(file.getAbsolutePath()));
-
-                    } catch (IOException e1) {
-
-                        Utils.showError("Não foi possível adicionar a imagem: " + file.getAbsolutePath());
-                        e1.printStackTrace();
-                    }
-                    lastFolder = file.getParent();
-                }
-            }
-        });
+	            JFileChooser f = new JFileChooser(lastFolder);
+	            f.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	            f.setMultiSelectionEnabled(true);
+	            f.setFileFilter(new FileFilter() {
+	
+	                @Override
+	                public boolean accept(File f) {
+	                    return f.getName().toLowerCase().endsWith("jpg");
+	                }
+	
+	                @Override
+	                public String getDescription() {
+	                    return "JPG files";
+	                }
+	            });
+	            f.showOpenDialog(null);
+	
+	            if (f.getSelectedFiles() != null) {
+	
+	                for (File file : f.getSelectedFiles()) {
+	
+	                    try {
+	
+	                        getImageListModel().add(new ImageData(file.getAbsolutePath()));
+	
+	                    } catch (IOException e1) {
+	
+	                        Utils.showError("Não foi possível adicionar a imagem: " + file.getAbsolutePath());
+	                        e1.printStackTrace();
+	                    }
+	                    lastFolder = file.getParent();
+	                }
+	            }
+	        });
+    	}
         return addImagesButton;
     }
-
-    private ImageData getSelectedImage() {
-        return getImageListModel().getElementAt(imageList.getSelectedIndex());
-    }
-
-    private void updateDetails() {
-
-        ImageData data = getSelectedImage();
-
-        // Activar ou desactivar os campos
-        getImagePanel().setEnabled(data != null);
-        getTitleTextField().setEnabled(data != null);
-        getTitleColorPanel().setEnabled(data != null);
-
-        if (data != null) {
-
-            // Definir campos
-            getTitleTextField().setText(data.title);
-            getTitleColorPanel().setColor(data.titleColor);
-            updateImage(data);
-
-        } else {
-
-            // Limpar campos
-            getTitleTextField().setText("");
-            getTitleColorPanel().clear();
-            getImagePanel().clear();
-        }
-    }
-    private void updateImage(ImageData data) {
-
-        if (data == null) {
-            return;
-        }
-
-        data.title = getTitleTextField().getText();
-        data.titleColor = getTitleColorPanel().getColor();
-        getImagePanel().setImage(Utils.overlayText(data.image, data.title, data.titleColor));
-    }
+	private JButton getMoveUpButton() {
+		if (moveUpButton == null) {
+			moveUpButton = new JButton("^");
+			moveUpButton.addActionListener(e -> {
+			
+				int index = getImageList().getSelectedIndex();
+				getImageListModel().moveUp(selected);
+				getImageList().setSelectedIndex(index-1);
+			});
+		}
+		return moveUpButton;
+	}
+	private JButton getMoveDownButton() {
+		if (moveDownButton == null) {
+			moveDownButton = new JButton("v");
+			moveDownButton.addActionListener(e -> { 
+				int index = getImageList().getSelectedIndex();
+				getImageListModel().moveDown(selected);
+				getImageList().setSelectedIndex(index+1);
+			});
+		}
+		return moveDownButton;
+	}
 }
