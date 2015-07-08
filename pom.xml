@@ -6,7 +6,11 @@
 
     <groupId>com.noozo.java</groupId>
     <artifactId>VideoMaker</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    
+    <properties>
+	   <deploy.folder>deploy</deploy.folder>
+	</properties>
 
     <!-- ********************* External repos ********************* -->
     <repositories>
@@ -53,6 +57,81 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+			<plugin>
+			  <groupId>org.codehaus.mojo</groupId>
+			  <artifactId>appassembler-maven-plugin</artifactId>
+			  <version>1.10</version>
+			  <configuration>
+			    <programs>
+			      <program>
+			        <mainClass>com.noozo.moviemaker.VideoMaker</mainClass>
+			        <id>videomaker</id>
+			      </program>
+			    </programs>
+			  </configuration>
+			</plugin>
+            <plugin>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <executions>
+			       <execution>
+			          <id>create-deployment-area</id>
+			          <phase>process-resources</phase>
+			          <goals>
+			             <goal>run</goal>
+			          </goals>
+			          <configuration>
+			             <tasks>
+			                <copy todir="${deploy.folder}/templates">
+			                   <fileset dir="${basedir}/templates"/>
+			                </copy>
+			                <copy todir="${deploy.folder}/ffmpeg">
+			                   <fileset dir="${basedir}/ffmpeg"/>
+			                </copy>
+			             </tasks>
+			          </configuration>
+			       </execution>
+			       <execution>
+			       	<id>copy-jar-file</id>
+			       	<phase>install</phase>
+		            <goals>
+		                <goal>run</goal>
+		            </goals>
+		            <configuration>
+			             <tasks>
+			                <copy tofile="${deploy.folder}/${project.artifactId}.jar">
+			                   <fileset file="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
+			                </copy>
+			             </tasks>
+			          </configuration>
+			       </execution>
+			    </executions>
+			 </plugin>            
+            <plugin>
+			  <artifactId>maven-dependency-plugin</artifactId>
+			  <configuration>
+			    <excludeTransitive>false</excludeTransitive>
+			        <!-- reference our custom panels jar in our installer descriptor without its version -->
+			    <stripVersion>true</stripVersion>
+			    <overWriteReleases>true</overWriteReleases>
+			    <overWriteSnapshots>true</overWriteSnapshots>
+			    <overWriteIfNewer>true</overWriteIfNewer>
+			  </configuration>
+			  <executions>
+			    <execution>
+			      <!-- copy *application* jars to izpack staging lib -->
+			      <id>copy-product-dependencies</id>
+			      <phase>prepare-package</phase>
+			      <goals>
+			        <goal>copy-dependencies</goal>
+			      </goals>
+			      <configuration>
+			        <outputDirectory>${deploy.folder}/lib</outputDirectory>
+			        <excludeScope>system</excludeScope>
+			        <!-- this excludes tools.jar, e.g. -->
+			      </configuration>
+			    </execution>
+			  </executions>
+			</plugin>
         </plugins>
     </build>
 
