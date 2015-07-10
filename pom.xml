@@ -9,7 +9,7 @@
     <version>1.0</version>
     
     <properties>
-	   <deploy.folder>deploy</deploy.folder>
+	   <deploy.folder>deploy/videomaker-${project.version}</deploy.folder>
 	</properties>
 
     <!-- ********************* External repos ********************* -->
@@ -62,6 +62,10 @@
 			  <artifactId>appassembler-maven-plugin</artifactId>
 			  <version>1.10</version>
 			  <configuration>
+			  	<binFolder>bin</binFolder>
+			  	<repositoryName>libs</repositoryName>
+			  	<repositoryLayout>flat</repositoryLayout>
+			  	<assembleDirectory>${deploy.folder}</assembleDirectory>
 			    <programs>
 			      <program>
 			        <mainClass>com.noozo.moviemaker.VideoMaker</mainClass>
@@ -87,51 +91,14 @@
 			                <copy todir="${deploy.folder}/ffmpeg">
 			                   <fileset dir="${basedir}/ffmpeg"/>
 			                </copy>
-			             </tasks>
-			          </configuration>
-			       </execution>
-			       <execution>
-			       	<id>copy-jar-file</id>
-			       	<phase>install</phase>
-		            <goals>
-		                <goal>run</goal>
-		            </goals>
-		            <configuration>
-			             <tasks>
-			                <copy tofile="${deploy.folder}/${project.artifactId}.jar">
-			                   <fileset file="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
+			                <copy todir="${deploy.folder}">
+			                   <fileset file="${basedir}/scripts/go*"/>
 			                </copy>
 			             </tasks>
 			          </configuration>
 			       </execution>
 			    </executions>
-			 </plugin>            
-            <plugin>
-			  <artifactId>maven-dependency-plugin</artifactId>
-			  <configuration>
-			    <excludeTransitive>false</excludeTransitive>
-			        <!-- reference our custom panels jar in our installer descriptor without its version -->
-			    <stripVersion>true</stripVersion>
-			    <overWriteReleases>true</overWriteReleases>
-			    <overWriteSnapshots>true</overWriteSnapshots>
-			    <overWriteIfNewer>true</overWriteIfNewer>
-			  </configuration>
-			  <executions>
-			    <execution>
-			      <!-- copy *application* jars to izpack staging lib -->
-			      <id>copy-product-dependencies</id>
-			      <phase>prepare-package</phase>
-			      <goals>
-			        <goal>copy-dependencies</goal>
-			      </goals>
-			      <configuration>
-			        <outputDirectory>${deploy.folder}/lib</outputDirectory>
-			        <excludeScope>system</excludeScope>
-			        <!-- this excludes tools.jar, e.g. -->
-			      </configuration>
-			    </execution>
-			  </executions>
-			</plugin>
+			 </plugin>
         </plugins>
     </build>
 
