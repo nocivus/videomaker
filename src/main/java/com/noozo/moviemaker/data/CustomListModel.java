@@ -68,4 +68,12 @@ public class CustomListModel<T> extends AbstractListModel<T> {
     	// Swap them
     	Collections.swap(data, index, index+1);
     }
+
+	public void remove(T item) {
+		
+		if (item != null) {
+			data.remove(item);
+			fireContentsChanged(this, 0, data.size());
+		}		
+	}
 }
