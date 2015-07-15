@@ -31,7 +31,7 @@ public class VideoMaker {
         		new File((i+1) + "_processed.jpg").delete();
         	}
         	
-            String command = ffmpeg + " -i " + imageFiles.get(i).fullPath + " -pix_fmt yuv420p -vf scale=" + VIDEO_WIDTH + ":" + VIDEO_HEIGHT + " " + (i+1) + "_processed.jpg";
+            String command = ffmpeg + " -i " + imageFiles.get(i).fullPath.replace(" ", "\\ ") + " -pix_fmt yuv420p -vf scale=" + VIDEO_WIDTH + ":" + VIDEO_HEIGHT + " " + (i+1) + "_processed.jpg";
             System.out.println(command);
             Process p = Runtime.getRuntime().exec(command);
             p.waitFor();
@@ -61,8 +61,11 @@ public class VideoMaker {
         System.out.println("Running command...");
         String command = ffmpeg + " -framerate 1/" + secondsPerImage + " -i %d_processed.jpg -c:v libx264 -r 30 -pix_fmt yuv420p -y " + movieFile;
         System.out.println(command);
-        Process p = Runtime.getRuntime().exec("chmod +x ffmpeg");
-        p.waitFor();
+        Process p;
+        if (Utils.OS != Utils.OS_WINDOWS) {
+        	p = Runtime.getRuntime().exec("chmod +x ffmpeg");
+        	p.waitFor();
+        }
         p = Runtime.getRuntime().exec(command);
         p.waitFor();
 
