@@ -2,6 +2,8 @@ package com.noozo.moviemaker;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -47,6 +49,7 @@ public class VideoMakerGUI extends JFrame {
     private ImageData selected;
     private JButton moveUpButton;
     private JButton moveDownButton;
+    private JButton btnX;
 
     public VideoMakerGUI() throws Exception {
 
@@ -75,10 +78,10 @@ public class VideoMakerGUI extends JFrame {
         ImageData lastSlide = new ImageData(VideoMaker.BLACK);
         lastSlide.title.fontSize = 30;
         lastSlide.title.position = new Point(280, 360);
-        lastSlide.title.text = "Isabel Dias - 939 608 228";
+        lastSlide.title.text = "Isabel Dias - 910 804 521";
         lastSlide.title2.fontSize = 20;
         lastSlide.title2.position = new Point(400, 420);
-        lastSlide.title2.text = "Tippy Family Century 21";        
+        lastSlide.title2.text = "Tipy Family Century 21";        
         
         getImageListModel().add(firstSlide);        
         getImageListModel().add(lastSlide);
@@ -188,6 +191,7 @@ public class VideoMakerGUI extends JFrame {
         	sidebarActionsPanel = new JPanel();
         	sidebarActionsPanel.add(getAddImagesButton());
         	sidebarActionsPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        	sidebarActionsPanel.add(getBtnX());
         	sidebarActionsPanel.add(getMoveUpButton());
         	sidebarActionsPanel.add(getMoveDownButton());
         }
@@ -312,5 +316,16 @@ public class VideoMakerGUI extends JFrame {
 			});
 		}
 		return moveDownButton;
+	}
+	private JButton getBtnX() {
+		if (btnX == null) {
+			btnX = new JButton("x");
+			btnX.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					getImageListModel().remove(selected);
+				}
+			});
+		}
+		return btnX;
 	}
 }
