@@ -71,7 +71,7 @@ public class VideoMaker {
 
         System.out.println("Deleting processed images...");
         for (int i=1; i<images.size()+1; i++) {
-        	//new File(i + "_processed.jpg").delete();
+        	new File(i + "_processed.jpg").delete();
         }
     }
 
