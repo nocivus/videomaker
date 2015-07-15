@@ -6,7 +6,7 @@
 
     <groupId>com.noozo.java</groupId>
     <artifactId>VideoMaker</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     
     <properties>
 	   <deploy.folder>deploy/videomaker-${project.version}</deploy.folder>
